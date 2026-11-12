@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Truku 山岳學習島 3D</title>
+<meta name="description" content="建構原鄉知識本土型 LLM 並應用 AI 做探究與創用——以太魯閣族狩獵文化與 Gaya 為本位的人機共創探究教學（3D 群島版）">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/world3d.css">
+</head>
+<body data-theme="dawn">
+<header class="topbar3">
+  <div class="brand3">
+    <span class="logo3" aria-hidden="true"></span>
+    <div><h1>Truku 山岳學習島</h1><p>TEACHING DREAM ISLANDS・太魯閣國家公園</p></div>
+  </div>
+  <div class="ctrls" role="group" aria-label="場景設定">
+    <label class="radio"><input type="radio" name="theme" value="dawn" checked><span>晨光</span></label>
+    <label class="radio"><input type="radio" name="theme" value="fog"><span>海霧</span></label>
+    <label class="radio"><input type="radio" name="theme" value="night"><span>夜海</span></label>
+    <span class="sep"></span>
+    <label class="check"><input type="checkbox" id="reduce"><span>減少動態</span></label>
+    <button class="textbtn" id="sound" aria-pressed="false">♫ 開啟音景</button>
+    <label class="vol">音量 <input type="range" id="vol" min="0" max="100" value="35" aria-label="音量"> <span id="volV">35%</span></label>
+    <button class="textbtn" id="btnText">☷ 文字清單</button>
+  </div>
+  <div class="acts3">
+    <button class="pill" id="btnSide">◧ 導覽列</button>
+    <button class="pill" id="btnCert">證書</button>
+    <button class="pill lamp" id="btnLamp">光雕盒 <span id="lampLock">🔒</span></button>
+    <button class="pill" id="btnProgress">進度</button>
+    <button class="pill round" id="btnHelp" aria-label="玩法說明">?</button>
+  </div>
+</header>
+
+<aside class="side" id="side" aria-label="課程導覽">
+  <p class="kicker">● 走過吊橋，帶著 Gaya 登頂！</p>
+  <h2 class="hero">下一座山，<br>你的探究<br><em>從這裡開始。</em></h2>
+  <p class="lead">跟著部落長者 Baki，在太魯閣山岳群島認識主權 AI、狩獵文化與 Gaya。</p>
+  <button class="hubcard" id="goHub"><span class="star">✦</span><span><b>前往布洛灣台地</b><small>Baki 的桂竹家屋・主權 AI 基地</small></span><span>↗</span></button>
+  <div class="row mobile-extra" style="display:none;margin-bottom:12px"><button class="pill" onclick="document.getElementById('btnCert').click()">紀念證書</button><button class="pill" onclick="document.getElementById('btnProgress').click()">進度匯出入</button><button class="pill" onclick="document.getElementById('meChip').click()">換角色</button></div>
+  <div class="sidehead"><b>探索課程</b><span id="readN">0 / 8 已登頂</span></div>
+  <div class="bar"><i id="readBar"></i></div>
+  <label class="small" for="search">搜尋山岳與教材</label>
+  <input class="inp" id="search" placeholder="⌕ 搜尋島名、概念、信物…">
+  <select class="inp" id="filter" aria-label="篩選主題">
+    <option value="">全部主題</option><option>AI 素養</option><option>文化 Gaya</option><option>科學探究</option><option>人機共創</option>
+  </select>
+  <ol class="courses" id="courseList"></ol>
+  <p class="foot">© 建構原鄉知識本土型 LLM 計畫<br><a href="https://ai.truku.tw/showcase" target="_blank" rel="noopener">https://ai.truku.tw/showcase</a></p>
+</aside>
+
+<main class="wstage" id="stage" aria-label="3D 太魯閣山岳群島（拖曳旋轉、滾輪縮放、WASD 移動）">
+  <div class="stage-title"><p>THE TRUKU ARCHIPELAGO</p><b>8 座課程山＋中央台地</b></div>
+</main>
+
+<section class="isle-card" id="isleCard" aria-live="polite"></section>
+<button class="near-tip" id="nearTip"></button>
+
+<div class="hud-r">
+  <div class="stamp"><small>我的登頂信物</small><b><span class="sp">✦</span> <span id="stampN">0</span> / <span id="stampT">8</span></b></div>
+  <button class="me" id="meChip" title="更換角色"></button>
+  <canvas id="minimap" width="180" height="150" aria-label="小地圖"></canvas>
+  <div class="zbtns">
+    <button id="zMe" title="跟隨我的角色" aria-label="跟隨角色">◎</button>
+    <button id="zIn" aria-label="放大">＋</button>
+    <button id="zOut" aria-label="縮小">－</button>
+    <button id="zHome" title="回到全景" aria-label="回到全景">⌖</button>
+  </div>
+</div>
+
+<div class="joy" id="joy" aria-label="移動搖桿"><i id="joyKnob"></i></div>
+<p class="keyhint">WASD／方向鍵移動・E 對話・拖曳轉視角</p>
+<nav class="isle-bar" id="isleBar" aria-label="島嶼列"></nav>
+
+<!-- 島嶼面板 -->
+<section class="panel" id="panel" aria-modal="true" role="dialog" aria-labelledby="panelTitle">
+  <div class="panel-head">
+    <div class="panel-title">
+      <span class="no" id="panelNo"></span>
+      <div><h2 id="panelTitle"></h2><p id="panelSub"></p></div>
+    </div>
+    <button class="iconbtn" id="panelClose" aria-label="關閉">✕</button>
+  </div>
+  <nav class="tabs" id="tabs" role="tablist"></nav>
+  <div class="panel-body" id="panelBody"></div>
+</section>
+
+<div class="modal" id="modal" role="dialog" aria-modal="true"><div class="modal-card" id="modalCard"></div></div>
+<div class="onboard" id="onboard" role="dialog" aria-modal="true" aria-label="選擇角色"></div>
+<div class="scrim" id="scrim"></div>
+<div class="toast" id="toast" role="status"></div>
+
+<script src="js/vendor/three.min.js"></script>
+<script src="js/vendor/marked.min.js"></script>
+<script src="js/data.js"></script>
+<script src="js/content-bundle.js"></script>
+<script src="js/assets-embed.js"></script>
+<script src="js/characters.js"></script>
+<script src="js/chars3d.js"></script>
+<script src="js/orbit.js"></script>
+<script src="js/house3d.js"></script>
+<script src="js/lamp.js"></script>
+<script src="js/world3d.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
